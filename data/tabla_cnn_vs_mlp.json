@@ -1,0 +1,15 @@
+{
+  "cnn": {
+    "parametros": 2196722,
+    "accuracy": 0.9787,
+    "f1_macro": 0.9787,
+    "epocas": "~60 (corrida original)"
+  },
+  "mlp": {
+    "parametros": 3150610,
+    "accuracy": 0.1202,
+    "f1_macro": 0.0543,
+    "epocas": 8,
+    "tiempo_min": 3.2
+  }
+}
