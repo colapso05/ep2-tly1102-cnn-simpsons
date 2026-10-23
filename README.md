@@ -155,7 +155,7 @@ bigote respecto de los ojos.
 
 ## 10. Entrenamiento
 
-- CNN entrenada hasta convergencia en la corrida de desarrollo (~60 épocas, 75 min de CPU). Las curvas
+- CNN entrenada hasta convergencia en la corrida de desarrollo (25 épocas, 25,7 min de CPU). Las curvas
   completas están en la sección 7 del cuaderno.
 - `EarlyStopping` con `patience=6` sobre `val_loss` y `restore_best_weights=True`.
 - **Orden de las técnicas:** primero accuracy; después regularización, dropout y aumento de datos; y
@@ -222,8 +222,8 @@ convergencia; el MLP recibió **8 épocas** por presupuesto de cómputo, lo que 
 | **Parámetros** | **2,196,722** | 3,150,610 |
 | Accuracy (test) | **0.9787** | 0.1202 |
 | F1 macro (test) | **0.9787** | 0.0543 |
-| Épocas | ~60 (corrida original) | 8 |
-| Tiempo (min, CPU) | ~75 | 3.2 |
+| Épocas | 25 | 8 |
+| Tiempo (min, CPU) | 25,7 | 3,2 |
 
 ![Comparación](images/fig_11_cnn_vs_mlp.png)
 

@@ -3,7 +3,8 @@
     "parametros": 2196722,
     "accuracy": 0.9787,
     "f1_macro": 0.9787,
-    "epocas": "~60 (corrida original)"
+    "epocas": 25,
+    "tiempo_min": 25.7
   },
   "mlp": {
     "parametros": 3150610,
