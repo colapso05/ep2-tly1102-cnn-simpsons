@@ -1,0 +1,37 @@
+{
+  "variante": "tope 800 por clase, semilla 2026, split 85/15",
+  "n_train": 10884,
+  "n_val": 1921,
+  "n_test": 890,
+  "clases": 18,
+  "cnn": {
+    "arquitectura": "CNN 3 bloques conv + BN + MaxPool",
+    "parametros": 2196178,
+    "accuracy": 0.4292,
+    "f1_macro": 0.3872,
+    "tiempo_min": 31.0,
+    "epocas": 18,
+    "brecha": -0.1248,
+    "val_acc": 0.4289
+  },
+  "mlp": {
+    "arquitectura": "MLP Flatten + Dense(512) + Dropout(0.3)",
+    "parametros": 3150610,
+    "accuracy": 0.1449,
+    "f1_macro": 0.0893,
+    "tiempo_min": 3.7,
+    "epocas": 18,
+    "brecha": -0.0408,
+    "val_acc": 0.1473
+  },
+  "figuras": [
+    "fig_01_distribucion_clases.png",
+    "fig_02_ejemplos_por_clase.png",
+    "fig_03_curvas_entrenamiento.png",
+    "fig_04_matriz_confusion.png",
+    "fig_05_cnn_vs_mlp.png",
+    "fig_06_feature_maps.png",
+    "fig_07_gradcam_por_clase.png",
+    "fig_08_errores.png"
+  ]
+}
