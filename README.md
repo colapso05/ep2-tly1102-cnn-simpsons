@@ -349,3 +349,87 @@ jupyter nbconvert --to notebook --execute --inplace \
 ```
 
 Los tensores `X_train.npy` / `X_test.npy` no se versionan (233 MB): se regeneran desde `data/raw/`.
+
+
+---
+
+# Anexo EP3 · Bloques incorporados para la Evaluación Parcial N°3
+
+Estas secciones se agregaron sobre el pipeline de la evaluación anterior, sin reentrenar la CNN final.
+Los valores son los que imprime el cuaderno al ejecutarse.
+
+## Pipeline Integrado
+
+Nueve etapas como funciones documentadas y reutilizables: `cargar_dataset`, `resumen_eda`,
+`preparar_datos`, `construir_cnn`, `construir_mlp`, `entrenar`, `regularizar`, `evaluar`, `auditar` y
+`buscar_hiperparametros`. La sección 17.1 ejecuta la cadena completa de punta a punta sobre un
+subconjunto, y el cuaderno confirma que termina sin errores.
+
+## Optimización con búsqueda aleatoria
+
+Se usa **Random Search** y no Grid Search porque la tasa de aprendizaje y el dropout son continuos: un
+grid obliga a discretizarlos en una rejilla arbitraria, mientras que el muestreo aleatorio cubre mejor
+el espacio con el mismo presupuesto de entrenamientos (Bergstra y Bengio, 2012).
+
+| Modelo | Mejor configuración encontrada |
+|---|---|
+| CNN | Mejor configuración por F1 macro: (32, 64) dropout 0.3 lr 0.001 -> 0.0672 |
+| MLP | Mejor MLP: 256 neuronas, dropout 0.3 |
+
+## ROC-AUC
+
+**ROC-AUC macro uno contra el resto sobre test: 0.9993.** Complementa a accuracy y F1 porque mide la
+capacidad de ordenar las clases sin depender del umbral de decisión, y permite detectar personajes que
+el modelo confunde de forma sistemática aunque la accuracy global sea alta.
+
+## Auditoría de sesgos
+
+Se auditó el modelo final con tres mediciones sobre las 890 imágenes de test.
+
+| Medición | Valor |
+|---|---|
+| Recall medio, clases con más imágenes | 0,9783 |
+| Recall medio, clases con menos imágenes | 0,9795 |
+| Brecha entre ambos grupos | **−0,11 puntos** |
+| Correlación soporte-recall | −0,144 |
+
+**Resultado: la hipótesis de sesgo por tamaño de clase no se confirma.** Las clases minoritarias no
+rinden peor que las mayoritarias, la brecha es negativa (a favor de las minoritarias) y la correlación es
+débil e inversa. El desbalanceo de 6,27× del entrenamiento no se tradujo en un sesgo medible del modelo,
+y eso se reporta tal cual: era la hipótesis razonable de partida y la medición la descartó.
+
+Donde **sí** aparece una asimetría es en la calibración por nivel de confianza:
+
+| Confianza | Imágenes | Accuracy real |
+|---|---|---|
+| 0,30 – 0,60 | 21 | 0,7143 |
+| 0,60 – 0,80 | 22 | 0,6818 |
+| 0,80 – 0,95 | 60 | 0,9167 |
+| 0,95 – 1,00 | 787 | 0,9987 |
+
+El modelo es honesto cuando está seguro: en el tramo de confianza superior acierta el 99,87% de las 787
+imágenes. Y cuando duda, duda de verdad: en los dos tramos bajos el acierto cae al orden del 70%. Eso es
+lo que justifica el umbral de rechazo de la sección 14: la confianza es informativa, no decorativa.
+
+**Sesgo residual identificado.** La clase con peor ROC-AUC es Nelson Muntz (0,9932), la más pequeña del
+dataset. **Medidas propuestas:** aumentar ejemplos de las clases minoritarias, aplicar pesos por clase en
+la pérdida, y usar el umbral de rechazo para derivar a revisión humana justo las predicciones de baja
+confianza.
+
+## XAI cuantificado
+
+| Medición | Valor |
+|---|---|
+| Masa del Grad-CAM en la zona central, aciertos | 0.358 |
+| Masa del Grad-CAM en la zona central, errores | 0.274 |
+
+El mapa de activación deja de ser ilustración: se mide qué fracción de su masa cae en la región donde
+está el personaje. Una masa alta en los aciertos respalda dos decisiones del trabajo: que el modelo usa
+al personaje y no el escenario, y que `Flatten` es preferible a `GlobalAveragePooling`, porque promediar
+los mapas diluye justamente la localización que estas mediciones muestran como informativa.
+
+## Referencias
+
+Ver la sección 22 del cuaderno: Grad-CAM (Selvaraju et al., 2017), Dropout (Srivastava et al., 2014),
+Batch Normalization (Ioffe y Szegedy, 2015), Random Search (Bergstra y Bengio, 2012), ROC (Fawcett,
+2006), CRISP-DM (Wirth y Hipp, 2000) y calibración multi-clase (Kull et al., 2019).
