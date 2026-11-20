@@ -442,6 +442,47 @@ está el personaje. Una masa alta en los aciertos respalda dos decisiones del tr
 al personaje y no el escenario, y que `Flatten` es preferible a `GlobalAveragePooling`, porque promediar
 los mapas diluye justamente la localización que estas mediciones muestran como informativa.
 
+## Evaluación crítica del pipeline
+
+**Fortalezas.** Una sola fuente de verdad para los datos: sólo la etapa 1 carga y la 3 particiona, así
+que el test llega intacto a la evaluación. La auditoría vive dentro del pipeline y no reentrena, por eso
+se puede correr siempre: fue la que descartó la hipótesis de sesgo por clase y encontró la asimetría de
+calibración. Y las etapas son funciones con firma explícita, lo que permite que la búsqueda sea un bucle
+y no un copiar y pegar.
+
+**Limitaciones.** La regularización se decide con evidencia parcial: BatchNorm resta en el subconjunto
+(0,5957 contra 0,7589) por falta de pasos por época, y se conserva en el modelo final por el argumento
+del número de pasos, no por un experimento aislado sobre el dataset completo. El Random Search corre con
+4 épocas y sólo ordena configuraciones. Las funciones viven en el cuaderno, no en un módulo con pruebas.
+Y no hay semillas repetidas: una diferencia de medio punto puede ser ruido del inicializador.
+
+**Riesgos en producción.** Etiqueta falsa silenciosa (mitigada con el umbral 0,70: 96,2% automático con
+99,07% de precisión), fondo como atajo (medido: 0,358 de la masa del Grad-CAM en el centro), clases raras
+(la peor AUC es Nelson, 0,9932) y deriva del dato, que **no** está monitoreada y es la mejora pendiente
+más importante.
+
+**Mejoras, en orden de retorno.** Pesos por clase en la pérdida; tres semillas por configuración;
+búsqueda con presupuesto completo; empaquetar el pipeline como módulo con pruebas por etapa; transfer
+learning afinando las últimas capas.
+
+## Justificación del modelo final e implicancias éticas
+
+La elección no se apoya en un número sino en cuatro evidencias convergentes: **desempeño** (97,87% de
+accuracy, F1 0,9787 y ROC-AUC 0,9993 sobre 890 imágenes que no participaron de ninguna decisión),
+**comparación entre arquitecturas** (0,5928 contra 0,1182 con la mitad de parámetros), **auditoría** (el
+sesgo por tamaño de clase se descartó con brecha −0,11 puntos) y **explicabilidad** (35,8% de la masa del
+Grad-CAM en la zona central en aciertos contra 27,4% en errores). Esa última medición es la que respalda
+elegir `Flatten` sobre `GlobalAveragePooling`: promediar mapas diluye justo la localización que resulta
+informativa.
+
+**Ética.** Los datos son fotogramas de una obra audiovisual con fines académicos: sin datos personales ni
+sensibles, y sin redistribuir las imágenes en el repositorio. El desbalanceo de 6,27× es un riesgo de
+diseño del dataset, mitigable con pesos por clase. Los personajes son caricaturas con rasgos
+estereotipados: el modelo aprende esos estereotipos, y usarlo para inferir atributos de personas reales
+sería inaceptable. Y la transparencia es operativa, no decorativa: bajo 0,70 el sistema responde
+`no identificado` y el Grad-CAM permite auditar caso por caso. El umbral no elimina los errores, los
+traslada a una cola de revisión que debe existir en la operación.
+
 ## Referencias
 
 Ver la sección 22 del cuaderno: Grad-CAM (Selvaraju et al., 2017), Dropout (Srivastava et al., 2014),
