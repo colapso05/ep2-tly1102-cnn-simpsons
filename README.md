@@ -1,8 +1,8 @@
-# EP2 · TLY1102 — Clasificación de personajes de Los Simpsons con una CNN
+# EP3 · TLY1102 — Clasificación de personajes de Los Simpsons con una CNN
 
-Informe técnico de la Evaluación Parcial N°2 de **Técnicas Avanzadas de Machine Learning I**.
+Informe técnico de la Evaluación Parcial N°3 de **Técnicas Avanzadas de Machine Learning I**.
 Todas las cifras de este documento salen del cuaderno
-`notebooks/EP2_TLY1102_CNN_Simpsons_final.ipynb`, que reproduce cada etapa.
+`notebooks/EP3_TLY1102_CNN_Simpsons_final.ipynb`, que reproduce cada etapa.
 
 ---
 
