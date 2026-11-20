@@ -365,16 +365,30 @@ Nueve etapas como funciones documentadas y reutilizables: `cargar_dataset`, `res
 `buscar_hiperparametros`. La sección 17.1 ejecuta la cadena completa de punta a punta sobre un
 subconjunto, y el cuaderno confirma que termina sin errores.
 
-## Optimización con búsqueda aleatoria
+## Optimización en dos niveles
 
-Se usa **Random Search** y no Grid Search porque la tasa de aprendizaje y el dropout son continuos: un
-grid obliga a discretizarlos en una rejilla arbitraria, mientras que el muestreo aleatorio cubre mejor
-el espacio con el mismo presupuesto de entrenamientos (Bergstra y Bengio, 2012).
+**Barrido por ejes (el que decide).** Sobre 6.000 imágenes, un hiperparámetro por vez:
 
-| Modelo | Mejor configuración encontrada |
-|---|---|
-| CNN | Mejor configuración por F1 macro: (32, 64) dropout 0.3 lr 0.001 -> 0.0672 |
-| MLP | Mejor MLP: 256 neuronas, dropout 0.3 |
+| Eje | Configuraciones | val_accuracy | Ganadora |
+|---|---|---|---|
+| Profundidad | 1 · 2 · 3 bloques | 0,4367 · 0,5441 · **0,5928** | 3 bloques |
+| Optimizador | Adam 1e-3 · SGD 1e-2 | **0,5928** · 0,4993 | Adam |
+| Aumento de datos | sin · con | 0,5928 · **0,6699** | con (brecha 0,41 → 0,20) |
+| Regularización | sin · dropout · BN · ambos | **0,7589** · 0,7305 · 0,5957 · 0,5928 | sin regularización en este presupuesto |
+
+El aumento de datos no sólo sube la accuracy: **reduce la brecha de generalización a la mitad**. Y la
+regularización es la evidencia más incómoda y por eso se declara: con 6.000 imágenes BatchNorm resta,
+porque necesita suficientes pasos por época para estimar sus medias móviles (47 pasos aquí contra 119
+del dataset completo). En el modelo final sí suma, y esa diferencia se explica en la sección 18.1.
+
+**Random Search (el que explora el espacio conjunto).** Tres configuraciones completas que cambian
+filtros, dropout y tasa a la vez, con un presupuesto fijo de 4 épocas. Se usa Random Search y no Grid
+porque la tasa y el dropout son continuos: un grid obligaría a discretizarlos en una rejilla arbitraria
+(Bergstra y Bengio, 2012).
+
+**Limitación declarada:** con 4 épocas el F1 absoluto del Random Search no es comparable con el del
+modelo final. Ordena configuraciones bajo costo fijo; no reporta desempeño. La decisión la sostiene el
+barrido por ejes.
 
 ## ROC-AUC
 
