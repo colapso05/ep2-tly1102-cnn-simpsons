@@ -362,7 +362,7 @@ Los valores son los que imprime el cuaderno al ejecutarse.
 
 Nueve etapas como funciones documentadas y reutilizables: `cargar_dataset`, `resumen_eda`,
 `preparar_datos`, `construir_cnn`, `construir_mlp`, `entrenar`, `regularizar`, `evaluar`, `auditar` y
-`buscar_hiperparametros`. La sección 17.1 ejecuta la cadena completa de punta a punta sobre un
+`buscar_hiperparametros`. La sección 15.1 ejecuta la cadena completa de punta a punta sobre un
 subconjunto, y el cuaderno confirma que termina sin errores.
 
 ## Optimización en dos niveles
@@ -379,7 +379,7 @@ subconjunto, y el cuaderno confirma que termina sin errores.
 El aumento de datos no sólo sube la accuracy: **reduce la brecha de generalización a la mitad**. Y la
 regularización es la evidencia más incómoda y por eso se declara: con 6.000 imágenes BatchNorm resta,
 porque necesita suficientes pasos por época para estimar sus medias móviles (47 pasos aquí contra 119
-del dataset completo). En el modelo final sí suma, y esa diferencia se explica en la sección 18.1.
+del dataset completo). En el modelo final sí suma, y esa diferencia se explica en la sección 16.1.
 
 **Random Search (el que explora el espacio conjunto).** Tres configuraciones completas que cambian
 filtros, dropout y tasa a la vez, con un presupuesto fijo de 4 épocas. Se usa Random Search y no Grid
@@ -485,6 +485,6 @@ traslada a una cola de revisión que debe existir en la operación.
 
 ## Referencias
 
-Ver la sección 22 del cuaderno: Grad-CAM (Selvaraju et al., 2017), Dropout (Srivastava et al., 2014),
+Ver la sección de Referencias del cuaderno: Grad-CAM (Selvaraju et al., 2017), Dropout (Srivastava et al., 2014),
 Batch Normalization (Ioffe y Szegedy, 2015), Random Search (Bergstra y Bengio, 2012), ROC (Fawcett,
 2006), CRISP-DM (Wirth y Hipp, 2000) y calibración multi-clase (Kull et al., 2019).
